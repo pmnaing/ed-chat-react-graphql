@@ -8,7 +8,7 @@ import './home.css';
 //OpenAI API configuration
 const configuration = new Configuration({
     organization: process.env.REACT_APP_OPENAI_ORG_ID, // Organization ID
-    apiKey: process.env.REACT_APP_OPENAI_API_KEY, // API key
+    apiKey: process.env.REACT_APP_OPENAI_API_KEY, // API key test
 });
 
 console.log(configuration.organization)
