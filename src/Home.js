@@ -73,7 +73,7 @@ const Home = () => {
                         {
                             "role": "system",
                             "content": `Given the skill "${skill}", 
-                                        Generate a list of general skills and sort them by alphabetical order,
+                                        Generate a list of general skills related to "${skill}"  and sort them by alphabetical order without adding number listing and bullet points,
                                         Do not accept any "${skill}" skills that are not related or null values,`,
                         },
                     ],
@@ -92,7 +92,7 @@ const Home = () => {
             .split('\n') // split by new line
             .map((skill) => skill.trim()) // remove whitespace
             .filter((skill) => skill !== '') // remove empty lines
-            .map((skill, index) => <li className="tech-list" key={index} onClick={() => handleItemClick(skill)}>{skill}</li>);
+            .map((skill, index) => <div className="tech-list" key={index} onClick={() => handleItemClick(skill)}>{skill}</div>);
 
             setTechList(techListAsArray);
         } else {
@@ -142,9 +142,9 @@ const Home = () => {
             </form>
             {techList && (
                 <section className="tech-list-container">
-                    <ul className="tech-list-box">
+                    <div className="tech-list-box">
                     {techList}    
-                    </ul>
+                    </div>
                 </section>
             )}
         </div>
