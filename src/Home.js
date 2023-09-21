@@ -17,16 +17,10 @@ console.log(configuration.apiKey)
 const Home = () => {
     const [skill, setSkill] = useState('');
     const [techList, setTechList] = useState('');
-    // const [selectedSkills, setSelectedSkills] = useState([]);
 
-    // Array for temperature options
-    const temperatureOptions = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2];
-    const [selectedTemperature, setSelectedTemperature] = useState(temperatureOptions[0]);
-
-    function handleTemperatureChange(event) {
-        const selectedTemperatureValue = parseFloat(event.target.value);
-        setSelectedTemperature(selectedTemperatureValue);
-    }
+    // Temperature precision option
+    const [precision, setPrecision] = useState('precise');
+    
 
     // Test function to handle item selection
     function handleItemClick(skill) {
@@ -48,36 +42,38 @@ const Home = () => {
             return;
         }
 
+        let selectedTemperature = 0;
+
+        if (precision === 'less-precise') {
+            // Use a different range for "Less Precise" set range between 0.6 - 1
+            selectedTemperature = (0.6 + Math.random() * 0.4).toFixed(1);
+        } else if (precision === 'precise') {
+            // Use a random temperature for "Precise" set range between 0 - 0.5
+            selectedTemperature = (Math.random() * 0.5).toFixed(1);
+        }
+
         try {
             const response = await fetch(
-            // 'https://api.openai.com/v1/completions',
             'https://api.openai.com/v1/chat/completions',
             {
                 //POST request
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${configuration.apiKey}`, //Authorization API key
+                    'Authorization': `Bearer ${configuration.apiKey}`, //Authorization API
                 },
                 //stringify the body of the request
                 body: JSON.stringify({
-                    // prompt: `Given the skill "${skill}", 
-                    // Generate a list of general skills:,
-                    // Do not accept any "${skill}" skills that are not related or null values,
-                    // Sort the list of skills by relevance to "${skill} in alphabetical order`,
-                    // temperature: selectedTemperature,
-                    // n: 50,
-                    // max_tokens: 4000,
                     model: "gpt-3.5-turbo",
                     messages: [
-                        {
-                            "role": "system",
-                            "content": `Given the skill "${skill}", 
-                                        Generate a list of general skills related to "${skill}"  and sort them by alphabetical order without adding number listing and bullet points,
-                                        Do not accept any "${skill}" skills that are not related or null values,`,
-                        },
+                    {
+                    "role": "system",
+                    "content": `Given the "${skill}", 
+                                Generate a list of general skills related to "${skill}" and sort them by alphabetical order without adding number listing and bullet points,
+                                Do not accept any input that are not related to "${skill}",`,
+                    },
                     ],
-                    temperature: selectedTemperature,
+                    temperature: parseFloat(selectedTemperature),
                     max_tokens: 256,
                 }),
             }
@@ -87,7 +83,7 @@ const Home = () => {
         console.log('API Response:', data);
         // Check if choices array exists and has items
         if (data && data.choices && data.choices.length > 0) {
-            const generatedTechList = data.choices[0].message.content;
+            const generatedTechList = data.choices[0].message.content; // Get the first item in the choices array
             const techListAsArray = generatedTechList
             .split('\n') // split by new line
             .map((skill) => skill.trim()) // remove whitespace
@@ -122,20 +118,17 @@ const Home = () => {
                     onChange={(e) => setSkill(e.target.value)}
                     ></input>
                 </div>
-                    <input type="submit" value="Generate" />
+                    <input type="submit" value="Submit" />
                 <div className="input-container">
-                    <label htmlFor="temperature">Accuracy Score:</label>
+                    <label htmlFor="precision">Precision:</label>
                     <div className="select-container">
                         <select
-                        id="temperature"
-                        value={selectedTemperature}
-                        onChange={handleTemperatureChange}
+                            id="precision"
+                            value={precision}
+                            onChange={(e) => setPrecision(e.target.value)}
                         >
-                        {temperatureOptions.map((option) => (
-                            <option key={option} value={option}>
-                            {option}
-                            </option>
-                        ))}
+                            <option value="precise">Precise</option>
+                            <option value="less-precise">Less Precise</option>
                         </select>
                     </div>
                 </div>
@@ -143,7 +136,7 @@ const Home = () => {
             {techList && (
                 <section className="tech-list-container">
                     <div className="tech-list-box">
-                    {techList}    
+                        {techList}    
                     </div>
                 </section>
             )}
