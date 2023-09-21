@@ -20,7 +20,7 @@ const Home = () => {
 
     // Temperature precision option
     const [precision, setPrecision] = useState('precise');
-    
+    let selectedTemperature;
 
     // Test function to handle item selection
     function handleItemClick(skill) {
@@ -42,7 +42,7 @@ const Home = () => {
             return;
         }
 
-        let selectedTemperature = 0;
+        
 
         if (precision === 'less-precise') {
             // Use a different range for "Less Precise" set range between 0.6 - 1
@@ -50,6 +50,7 @@ const Home = () => {
         } else if (precision === 'precise') {
             // Use a random temperature for "Precise" set range between 0 - 0.5
             selectedTemperature = (Math.random() * 0.5).toFixed(1);
+            console.log(selectedTemperature)
         }
 
         try {
